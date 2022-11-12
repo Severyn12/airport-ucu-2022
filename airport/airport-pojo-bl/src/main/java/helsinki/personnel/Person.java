@@ -40,7 +40,6 @@ import ua.com.fielden.platform.utils.Pair;
 @DescTitle(value = "Full Name", desc = "Person's full name - e.g. the first name followed by the middle initial followed by the surname.")
 @MapEntityTo
 @CompanionObject(PersonCo.class)
-@DescRequired
 @DisplayDescription
 public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
 
@@ -57,13 +56,13 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
 
     @IsProperty
     @MapTo
-    @Title(value = "First name", desc = "Person`s first name")
+    @Title(value = "First name", desc = "Person first name")
     @Required
     private String name;
 
     @IsProperty
     @MapTo
-    @Title(value = "Last name", desc = "Person`s last name")
+    @Title(value = "Last name", desc = "Person last name")
     @Required
     private String surname;
 
