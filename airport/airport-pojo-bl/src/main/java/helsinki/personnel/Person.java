@@ -17,6 +17,7 @@ import ua.com.fielden.platform.entity.annotation.KeyType;
 import ua.com.fielden.platform.entity.annotation.MapEntityTo;
 import ua.com.fielden.platform.entity.annotation.MapTo;
 import ua.com.fielden.platform.entity.annotation.Observable;
+import ua.com.fielden.platform.entity.annotation.Required;
 import ua.com.fielden.platform.entity.annotation.SkipEntityExistsValidation;
 import ua.com.fielden.platform.entity.annotation.Title;
 import ua.com.fielden.platform.entity.annotation.Unique;
@@ -34,7 +35,7 @@ import ua.com.fielden.platform.utils.Pair;
  * @author Generated
  */
 @KeyType(DynamicEntityKey.class)
-@EntityTitle("Person")
+@EntityTitle(value = "Person", desc = "People in our organisation")
 @KeyTitle(value = "Email", desc = "Uniquely identifies a person.")
 @DescTitle(value = "Full Name", desc = "Person's full name - e.g. the first name followed by the middle initial followed by the surname.")
 @MapEntityTo
@@ -53,6 +54,18 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     @Title(value = "Email", desc = "Uniquely identifies a person.")
     @BeforeChange({ @Handler(MaxLengthValidator.class), @Handler(EmailValidator.class) })
     private String email;
+
+    @IsProperty
+    @MapTo
+    @Title(value = "First name", desc = "Person`s first name")
+    @Required
+    private String name;
+
+    @IsProperty
+    @MapTo
+    @Title(value = "Last name", desc = "Person`s last name")
+    @Required
+    private String surname;
 
     @IsProperty
     @Unique
@@ -84,6 +97,26 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     @Title(value = "Mobile", desc = "A mobile phone number for this person.")
     @BeforeChange(@Handler(MaxLengthValidator.class))
     private String mobile;
+    
+    @Observable
+    public Person setName(final String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    @Observable
+    public Person setSurname(final String surname) {
+        this.surname = surname;
+        return this;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
 
     @Override
     @Observable
