@@ -4,11 +4,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import ua.com.fielden.platform.entity.meta.MetaProperty;
 import ua.com.fielden.platform.test.ioc.UniversalConstantsForTesting;
 import ua.com.fielden.platform.utils.IUniversalConstants;
 
 import helsinki.personnel.Person;
+import helsinki.personnel.validator.NoSpacesValidator;
 import helsinki.test_config.AbstractDomainTestCase;
+import static metamodels.MetaModels.Person_;
 
 /**
  * This is an example unit test, which can be used as a starting point for creating application unit tests.
@@ -25,17 +28,43 @@ public class PersonnelTest extends AbstractDomainTestCase {
      * Each test method should be related to exactly one concern, which facilitates creation of unit tests that address a single concern.
      */
     @Test
-    public void user_RMD_is_present_and_active() {
+    public void person_RMD_is_present_and_active() {
         final Person person = co(Person.class).findByKey("RMD@organisation.com");
         assertNotNull(person);
         assertTrue(person.isActive());
     }
 
     @Test
-    public void user_JC_is_present_but_not_active() {
+    public void person_JC_is_present_but_not_active() {
         final Person person = co(Person.class).findByKey("JC@organisation.com");
         assertNotNull(person);
         assertFalse(person.isActive());
+    }
+    
+    @Test
+    public void name_does_not_permit_spaces() {
+        final Person person = new_composite(Person.class, "person@helsinki");
+        person.setName("Space value");
+        
+        assertNotNull(person);
+        
+        final MetaProperty<String> mpName = person.getProperty(Person_.name());
+        assertFalse(mpName.isValid());
+        assertEquals(NoSpacesValidator.ERR_SPACES.formatted(mpName.getTitle(), Person.ENTITY_TITLE), mpName.getFirstFailure().getMessage());
+        assertEquals("Space value", mpName.getLastInvalidValue());
+    }
+    
+    @Test
+    public void surname_does_not_permit_spaces() {
+        final Person person = new_composite(Person.class, "person@helsinki");
+        person.setSurname("Space value");
+        
+        assertNotNull(person);
+        
+        final MetaProperty<String> mpSurname = person.getProperty(Person_.surname());
+        assertFalse(mpSurname.isValid());
+        assertEquals(NoSpacesValidator.ERR_SPACES.formatted(mpSurname.getTitle(), Person.ENTITY_TITLE), mpSurname.getFirstFailure().getMessage());
+        assertEquals("Space value", mpSurname.getLastInvalidValue());
     }
 
     /**
