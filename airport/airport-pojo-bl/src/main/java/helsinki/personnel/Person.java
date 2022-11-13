@@ -2,6 +2,7 @@ package helsinki.personnel;
 
 import static ua.com.fielden.platform.reflection.TitlesDescsGetter.getEntityTitleAndDesc;
 
+import helsinki.personnel.validator.NoSpacesValidator;
 import helsinki.security.tokens.persistent.Person_CanModify_user_Token;
 import ua.com.fielden.platform.entity.ActivatableAbstractEntity;
 import ua.com.fielden.platform.entity.DynamicEntityKey;
@@ -56,14 +57,16 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
 
     @IsProperty
     @MapTo
-    @Title(value = "First name", desc = "Person first name")
     @Required
+    @Title(value = "First name", desc = "Person first name")
+    @BeforeChange(@Handler(NoSpacesValidator.class))
     private String name;
 
     @IsProperty
     @MapTo
-    @Title(value = "Last name", desc = "Person last name")
     @Required
+    @Title(value = "Last name", desc = "Person last name")
+    @BeforeChange(@Handler(NoSpacesValidator.class))
     private String surname;
 
     @IsProperty
