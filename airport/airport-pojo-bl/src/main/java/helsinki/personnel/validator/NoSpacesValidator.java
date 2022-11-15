@@ -10,7 +10,7 @@ import ua.com.fielden.platform.error.Result;
 
 public class NoSpacesValidator extends AbstractBeforeChangeEventHandler<String> {
     
-    public static final String ERR_SPACES = "Spaces are permitted for [%s] in entity [%s].";
+    public static final String ERR_SPACES = "Spaces are not permitted for [%s] in entity [%s].";
 
     @Override
     public Result handle(final MetaProperty<String> property, String newValue, Set<Annotation> mutatorAnnotations) {
