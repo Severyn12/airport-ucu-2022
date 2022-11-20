@@ -67,17 +67,6 @@ public class PersonnelTest extends AbstractDomainTestCase {
         assertEquals("Space value", mpSurname.getLastInvalidValue());
     }
 
-    @Test
-    public void desc_represents_full_name() {
-        final Person newPerson = new_composite(Person.class, "person@helsinki").setName("Name").setSurname("Surname");
-
-        assertNull(newPerson.getDesc());
-
-        final Person person = save(newPerson);
-        assertEquals("Name Surname", person.getDesc());
-
-    }
-    
     /**
      * In case of a complex data population it is possible to store the data into a script by changing this method to return <code>true</code>.
      * <p>
