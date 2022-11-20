@@ -2,6 +2,10 @@ package helsinki.example;
 
 import static org.junit.Assert.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Test;
 
 import ua.com.fielden.platform.entity.meta.MetaProperty;
@@ -51,7 +55,55 @@ public class PersonnelTest extends AbstractDomainTestCase {
         assertEquals("Name Surname", person.getDesc());
 
     }
+    
+    @Test
+    public void emploeeNo_requires_dob() {
+        final Person person = new_composite(Person.class, "person@helsinki").setName("Name").setSurname("Surname");
 
+        person.setEmployeeNo("Worker");
+        person.setDob(null);
+
+        assertNotNull(person);
+
+        final MetaProperty<String> mpDob = person.getProperty(Person_.dob());
+        assertFalse(mpDob.isValid());
+        assertEquals("Required property [DOB] is not specified for entity [Person].", mpDob.getFirstFailure().getMessage());
+    }
+    
+    @Test
+    public void dob_is_not_future() throws ParseException {
+        final Person person = new_composite(Person.class, "person@helsinki");
+        
+        String date_string = "30-05-2024";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");      
+        Date newDate = formatter.parse(date_string);     
+        
+        person.setDob(newDate);
+        
+        assertNotNull(person);
+        
+        final MetaProperty<String> mpDob = person.getProperty(Person_.dob());
+        assertFalse(mpDob.isValid());
+        assertEquals("You can't enter the date of birth that is in future!", mpDob.getFirstFailure().getMessage());
+    }
+    
+    @Test
+    public void dob_is_not_old() throws ParseException {
+        final Person person = new_composite(Person.class, "person@helsinki");
+        
+        String date_string = "30-05-1900";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");      
+        Date newDate = formatter.parse(date_string);     
+        
+        person.setDob(newDate);
+        
+        assertNotNull(person);
+        
+        final MetaProperty<String> mpDob = person.getProperty(Person_.dob());
+        assertFalse(mpDob.isValid());
+        assertEquals("Too old date of birth!", mpDob.getFirstFailure().getMessage());
+    }
+    
     
     @Test
     public void name_does_not_permit_spaces() {
