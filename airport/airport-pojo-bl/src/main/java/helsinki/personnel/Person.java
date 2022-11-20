@@ -1,14 +1,20 @@
 package helsinki.personnel;
 
 import static ua.com.fielden.platform.reflection.TitlesDescsGetter.getEntityTitleAndDesc;
+import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.expr;
 
+
+import metamodels.MetaModels;
+import ua.com.fielden.platform.entity.annotation.Calculated;
+import ua.com.fielden.platform.entity.annotation.Readonly;
 import helsinki.personnel.validator.NoSpacesValidator;
+import ua.com.fielden.platform.entity.query.model.ExpressionModel;
 import helsinki.security.tokens.persistent.Person_CanModify_user_Token;
 import ua.com.fielden.platform.entity.ActivatableAbstractEntity;
 import ua.com.fielden.platform.entity.DynamicEntityKey;
 import ua.com.fielden.platform.entity.annotation.CompanionObject;
 import ua.com.fielden.platform.entity.annotation.CompositeKeyMember;
-import ua.com.fielden.platform.entity.annotation.DescRequired;
+import ua.com.fielden.platform.entity.annotation.DescReadonly;
 import ua.com.fielden.platform.entity.annotation.DescTitle;
 import ua.com.fielden.platform.entity.annotation.DisplayDescription;
 import ua.com.fielden.platform.entity.annotation.EntityTitle;
@@ -38,9 +44,10 @@ import ua.com.fielden.platform.utils.Pair;
 @KeyType(DynamicEntityKey.class)
 @EntityTitle(value = "Person", desc = "People in our organisation")
 @KeyTitle(value = "Email", desc = "Uniquely identifies a person.")
-@DescTitle(value = "Full Name", desc = "Person's full name - e.g. the first name followed by the middle initial followed by the surname.")
+@DescTitle(value = "Full Name", desc = "Person full name - e.g. the first name followed by the middle initial followed by the surname.")
 @MapEntityTo
 @CompanionObject(PersonCo.class)
+@DescReadonly
 @DisplayDescription
 public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
 
@@ -100,6 +107,13 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     @BeforeChange(@Handler(MaxLengthValidator.class))
     private String mobile;
     
+    @IsProperty
+    @Readonly
+    @Calculated
+    @Title(value = "Full name", desc = "Person full name - e.g. the first name followed by the middle initial followed by the surname.")
+    private String desc;
+    protected static final ExpressionModel desc_ = expr().concat().prop(MetaModels.Person_.name()).with().val(" ").with().prop(MetaModels.Person_.surname()).end().model();
+    
     @Observable
     public Person setName(final String name) {
         this.name = name;
@@ -123,8 +137,14 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     @Override
     @Observable
     public Person setDesc(final String desc) {
-        return (Person) super.setDesc(desc);
+        this.desc = desc;
+        return this;
     }
+
+    public String getDesc() {
+        return desc;
+    }
+
 
     @Observable
     public Person setEmail(final String email) {

@@ -42,6 +42,18 @@ public class PersonnelTest extends AbstractDomainTestCase {
     }
     
     @Test
+    public void desc_represents_full_name() {
+        final Person newPerson = new_composite(Person.class, "person@helsinki").setName("Name").setSurname("Surname");
+
+        assertNull(newPerson.getDesc());
+
+        final Person person = save(newPerson);
+        assertEquals("Name Surname", person.getDesc());
+
+    }
+
+    
+    @Test
     public void name_does_not_permit_spaces() {
         final Person person = new_composite(Person.class, "person@helsinki");
         person.setName("Space value");
