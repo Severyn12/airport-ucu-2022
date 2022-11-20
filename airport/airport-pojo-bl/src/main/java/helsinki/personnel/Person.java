@@ -1,19 +1,25 @@
 package helsinki.personnel;
 
 import static ua.com.fielden.platform.reflection.TitlesDescsGetter.getEntityTitleAndDesc;
+
+import java.util.Date;
+
 import static ua.com.fielden.platform.entity.query.fluent.EntityQueryUtils.expr;
 
 
 import metamodels.MetaModels;
 import ua.com.fielden.platform.entity.annotation.Calculated;
 import ua.com.fielden.platform.entity.annotation.Readonly;
+import helsinki.personnel.validator.DobConstraintValidator;
 import helsinki.personnel.validator.NoSpacesValidator;
+import helsinki.personnel.definers.MakeDobRequiredDefiner;
 import ua.com.fielden.platform.entity.query.model.ExpressionModel;
 import helsinki.security.tokens.persistent.Person_CanModify_user_Token;
 import ua.com.fielden.platform.entity.ActivatableAbstractEntity;
 import ua.com.fielden.platform.entity.DynamicEntityKey;
 import ua.com.fielden.platform.entity.annotation.CompanionObject;
 import ua.com.fielden.platform.entity.annotation.CompositeKeyMember;
+import ua.com.fielden.platform.entity.annotation.DateOnly;
 import ua.com.fielden.platform.entity.annotation.DescReadonly;
 import ua.com.fielden.platform.entity.annotation.DescTitle;
 import ua.com.fielden.platform.entity.annotation.DisplayDescription;
@@ -28,6 +34,7 @@ import ua.com.fielden.platform.entity.annotation.Required;
 import ua.com.fielden.platform.entity.annotation.SkipEntityExistsValidation;
 import ua.com.fielden.platform.entity.annotation.Title;
 import ua.com.fielden.platform.entity.annotation.Unique;
+import ua.com.fielden.platform.entity.annotation.mutator.AfterChange;
 import ua.com.fielden.platform.entity.annotation.mutator.BeforeChange;
 import ua.com.fielden.platform.entity.annotation.mutator.Handler;
 import ua.com.fielden.platform.property.validator.EmailValidator;
@@ -93,6 +100,7 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     @MapTo
     @Title(value = "Employee No", desc = "An employee number allocated to a person by their organisation.")
     @BeforeChange(@Handler(MaxLengthValidator.class))
+    @AfterChange(MakeDobRequiredDefiner.class)
     private String employeeNo;
 
     @IsProperty(length = 255)
@@ -114,6 +122,13 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
     private String desc;
     protected static final ExpressionModel desc_ = expr().concat().prop(MetaModels.Person_.name()).with().val(" ").with().prop(MetaModels.Person_.surname()).end().model();
     
+    @IsProperty
+    @MapTo
+    @DateOnly
+    @BeforeChange(@Handler(DobConstraintValidator.class))
+    @Title(value = "DOB", desc = "Date of birth")
+    private Date dob;
+
     @Observable
     public Person setName(final String name) {
         this.name = name;
@@ -132,6 +147,16 @@ public class Person extends ActivatableAbstractEntity<DynamicEntityKey> {
 
     public String getSurname() {
         return surname;
+    }
+    
+    @Observable
+    public Person setDob(final Date Dob) {
+        this.dob = Dob;
+        return this;
+    }
+
+    public Date getDob() {
+        return dob;
     }
 
     @Override
