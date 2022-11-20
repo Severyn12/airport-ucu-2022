@@ -1,5 +1,6 @@
 package helsinki.asset;
 
+import static metamodels.MetaModels.AssetClass_;
 import ua.com.fielden.platform.entity.fetch.IFetchProvider;
 import ua.com.fielden.platform.utils.EntityUtils;
 import ua.com.fielden.platform.dao.IEntityDao;
@@ -12,9 +13,6 @@ import ua.com.fielden.platform.dao.IEntityDao;
  */
 public interface AssetClassCo extends IEntityDao<AssetClass> {
 
-    static final IFetchProvider<AssetClass> FETCH_PROVIDER = EntityUtils.fetch(AssetClass.class).with(
-        // TODO: uncomment the following line and specify the properties, which are required for the UI. Then remove the line after.
-        // "key", "desc");
-        "Please specify the properties, which are required for the UI");
-
+    static final IFetchProvider<AssetClass> FETCH_PROVIDER = EntityUtils.fetch(AssetClass.class)
+            .with(AssetClass_.name(), AssetClass_.desc());
 }
