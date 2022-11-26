@@ -29,6 +29,12 @@ public class AssetClassDao extends CommonEntityDao<AssetClass> implements AssetC
     }
 
     @Override
+        public AssetClass new_() {
+            // TODO Auto-generated method stub
+            return super.new_().setActive(true);
+        }
+    
+    @Override
     @SessionRequired
     @Authorise(AssetClass_CanSave_Token.class)
     public AssetClass save(AssetClass entity) {
