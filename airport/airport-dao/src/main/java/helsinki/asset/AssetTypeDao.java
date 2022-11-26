@@ -27,6 +27,11 @@ public class AssetTypeDao extends CommonEntityDao<AssetType> implements AssetTyp
     public AssetTypeDao(final IFilter filter) {
         super(filter);
     }
+    
+    @Override
+        public AssetType new_() {
+            return super.new_().setActive(true);
+        }
 
     @Override
     @SessionRequired

@@ -9,6 +9,7 @@ import ua.com.fielden.platform.entity.annotation.CompositeKeyMember;
 import ua.com.fielden.platform.entity.annotation.MapEntityTo;
 import ua.com.fielden.platform.entity.annotation.MapTo;
 import ua.com.fielden.platform.entity.annotation.Observable;
+import ua.com.fielden.platform.entity.annotation.Required;
 import ua.com.fielden.platform.entity.annotation.Title;
 import ua.com.fielden.platform.entity.annotation.DescTitle;
 import ua.com.fielden.platform.entity.annotation.DisplayDescription;
@@ -47,6 +48,7 @@ public class AssetType extends ActivatableAbstractEntity<DynamicEntityKey> {
     private String name;
     
     @IsProperty
+    @Required
     @MapTo
     @Title(value = "Asset Class", desc = "An asset class that this asset type belongs to.")
     private String assetClass;
@@ -72,6 +74,7 @@ public class AssetType extends ActivatableAbstractEntity<DynamicEntityKey> {
     }
 
     @Override
+    @Observable
     public AssetType setActive(boolean active) {
         super.setActive(active);
         return this;
