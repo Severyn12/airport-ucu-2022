@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.google.inject.Injector;
 
+import helsinki.asset.AssetClass;
 import helsinki.asset.AssetType;
 import helsinki.common.LayoutComposer;
 import helsinki.common.StandardActions;
@@ -75,7 +76,7 @@ public class AssetTypeWebUiConfig {
                 .addTopAction(standardExportAction)
                 .addCrit(AssetType_).asMulti().autocompleter(AssetType.class).also()
                 .addCrit(AssetType_.desc()).asMulti().text().also()
-                .addCrit(AssetType_.assetClass()).asMulti().text().also()
+                .addCrit(AssetType_.assetClass()).asMulti().autocompleter(AssetClass.class).also()
                 .addCrit(AssetType_.active()).asMulti().bool()
 
                 .setLayoutFor(Device.DESKTOP, Optional.empty(), layout)
@@ -110,7 +111,7 @@ public class AssetTypeWebUiConfig {
                 .addProp(AssetType_.name()).asSinglelineText().also()
                 .addProp(AssetType_.active()).asCheckbox().also()
                 .addProp(AssetType_.desc()).asMultilineText().also()
-                .addProp(AssetType_.assetClass()).asMultilineText().also()
+                .addProp(AssetType_.assetClass()).asAutocompleter().also()
                 .addAction(MasterActions.REFRESH).shortDesc("Cancel").longDesc("Cancel action")
                 .addAction(MasterActions.SAVE)
                 .setActionBarLayoutFor(Device.DESKTOP, Optional.empty(), LayoutComposer.mkActionLayoutForMaster())
