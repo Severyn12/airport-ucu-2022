@@ -13,6 +13,7 @@ import org.hibernate.dialect.PostgreSQL82Dialect;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import org.apache.logging.log4j.Logger;
 
+import helsinki.asset.AssetClass;
 import helsinki.config.ApplicationDomain;
 import helsinki.data.IDomainData;
 import helsinki.utils.PostgresqlDbUtils;
@@ -80,6 +81,8 @@ public class PopulateDb extends DomainDrivenDataPopulation implements IDomainDat
 
         setupUser(User.system_users.SU, "helsinki");
         setupPerson(User.system_users.SU, "helsinki", "Super", "User");
+        
+        save(new_composite(AssetClass.class, "Electrical").setDesc("Electrical equipment"));
 
         LOGGER.info("Completed database creation and population.");
     }
