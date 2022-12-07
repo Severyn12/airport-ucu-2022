@@ -2,13 +2,20 @@ package helsinki.example;
 
 import static org.junit.Assert.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Test;
 
+import ua.com.fielden.platform.entity.meta.MetaProperty;
 import ua.com.fielden.platform.test.ioc.UniversalConstantsForTesting;
 import ua.com.fielden.platform.utils.IUniversalConstants;
 
 import helsinki.personnel.Person;
+import helsinki.personnel.validator.NoSpacesValidator;
 import helsinki.test_config.AbstractDomainTestCase;
+import static metamodels.MetaModels.Person_;
 
 /**
  * This is an example unit test, which can be used as a starting point for creating application unit tests.
@@ -25,17 +32,103 @@ public class PersonnelTest extends AbstractDomainTestCase {
      * Each test method should be related to exactly one concern, which facilitates creation of unit tests that address a single concern.
      */
     @Test
-    public void user_RMD_is_present_and_active() {
+    public void person_RMD_is_present_and_active() {
         final Person person = co(Person.class).findByKey("RMD@organisation.com");
         assertNotNull(person);
         assertTrue(person.isActive());
     }
 
     @Test
-    public void user_JC_is_present_but_not_active() {
+    public void person_JC_is_present_but_not_active() {
         final Person person = co(Person.class).findByKey("JC@organisation.com");
         assertNotNull(person);
         assertFalse(person.isActive());
+    }
+    
+    @Test
+    public void desc_represents_full_name() {
+        final Person newPerson = new_composite(Person.class, "person@helsinki").setName("Name").setSurname("Surname");
+
+        assertNull(newPerson.getDesc());
+
+        final Person person = save(newPerson);
+        assertEquals("Name Surname", person.getDesc());
+
+    }
+    
+    @Test
+    public void emploeeNo_requires_dob() {
+        final Person person = new_composite(Person.class, "person@helsinki").setName("Name").setSurname("Surname");
+
+        person.setEmployeeNo("Worker");
+        person.setDob(null);
+
+        assertNotNull(person);
+
+        final MetaProperty<String> mpDob = person.getProperty(Person_.dob());
+        assertFalse(mpDob.isValid());
+        assertEquals("Required property [DOB] is not specified for entity [Person].", mpDob.getFirstFailure().getMessage());
+    }
+    
+    @Test
+    public void dob_is_not_future() throws ParseException {
+        final Person person = new_composite(Person.class, "person@helsinki");
+        
+        String date_string = "30-05-2024";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");      
+        Date newDate = formatter.parse(date_string);     
+        
+        person.setDob(newDate);
+        
+        assertNotNull(person);
+        
+        final MetaProperty<String> mpDob = person.getProperty(Person_.dob());
+        assertFalse(mpDob.isValid());
+        assertEquals("You can't enter the date of birth that is in future!", mpDob.getFirstFailure().getMessage());
+    }
+    
+    @Test
+    public void dob_is_not_old() throws ParseException {
+        final Person person = new_composite(Person.class, "person@helsinki");
+        
+        String date_string = "30-05-1900";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");      
+        Date newDate = formatter.parse(date_string);     
+        
+        person.setDob(newDate);
+        
+        assertNotNull(person);
+        
+        final MetaProperty<String> mpDob = person.getProperty(Person_.dob());
+        assertFalse(mpDob.isValid());
+        assertEquals("Too old date of birth!", mpDob.getFirstFailure().getMessage());
+    }
+    
+    
+    @Test
+    public void name_does_not_permit_spaces() {
+        final Person person = new_composite(Person.class, "person@helsinki");
+        person.setName("Space value");
+        
+        assertNotNull(person);
+        
+        final MetaProperty<String> mpName = person.getProperty(Person_.name());
+        assertFalse(mpName.isValid());
+        assertEquals(NoSpacesValidator.ERR_SPACES.formatted(mpName.getTitle(), Person.ENTITY_TITLE), mpName.getFirstFailure().getMessage());
+        assertEquals("Space value", mpName.getLastInvalidValue());
+    }
+    
+    @Test
+    public void surname_does_not_permit_spaces() {
+        final Person person = new_composite(Person.class, "person@helsinki");
+        person.setSurname("Space value");
+        
+        assertNotNull(person);
+        
+        final MetaProperty<String> mpSurname = person.getProperty(Person_.surname());
+        assertFalse(mpSurname.isValid());
+        assertEquals(NoSpacesValidator.ERR_SPACES.formatted(mpSurname.getTitle(), Person.ENTITY_TITLE), mpSurname.getFirstFailure().getMessage());
+        assertEquals("Space value", mpSurname.getLastInvalidValue());
     }
 
     /**
@@ -86,8 +179,8 @@ public class PersonnelTest extends AbstractDomainTestCase {
         }
 
         // Here the three Person entities are persisted using the the inherited from TG testing framework methods.
-        save(new_(Person.class).setEmail("RMD@organisation.com").setDesc("Ronald McDonald").setActive(true));
-        save(new_(Person.class).setEmail("JC@organisation.com").setDesc("John Carmack").setActive(false));
+        save(new_(Person.class).setEmail("RMD@organisation.com").setName("Ronald").setSurname("McDonald").setActive(true));
+        save(new_(Person.class).setEmail("JC@organisation.com").setName("John").setSurname("Carmack").setActive(false));
     }
 
 }

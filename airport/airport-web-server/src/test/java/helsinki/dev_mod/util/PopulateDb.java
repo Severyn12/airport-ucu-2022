@@ -79,7 +79,7 @@ public class PopulateDb extends DomainDrivenDataPopulation implements IDomainDat
         LOGGER.info("Creating and populating the development database...");
 
         setupUser(User.system_users.SU, "helsinki");
-        setupPerson(User.system_users.SU, "helsinki");
+        setupPerson(User.system_users.SU, "helsinki", "Super", "User");
 
         LOGGER.info("Completed database creation and population.");
     }

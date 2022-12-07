@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import com.google.inject.Injector;
 
+import helsinki.common.LayoutComposer;
 import helsinki.common.StandardActions;
 import helsinki.main.menu.personnel.MiPerson;
 import helsinki.personnel.Person;
@@ -64,7 +65,8 @@ public class PersonWebUiConfig {
     private EntityCentre<Person> createCentre(final IWebUiBuilder builder) {
         final String layout = cell(
                 cell(cell().repeat(2).layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN))  // row 1 -> 1, 2
-               .cell(cell().repeat(2).layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN)), // row 2 -> 3, 4
+               .cell(cell().repeat(2).layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN))  // row 2 -> 3, 4
+               .cell(cell().repeat(2).layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN)), // row 2 -> 5, 6
                PADDING_LAYOUT).toString();
 
         final EntityActionConfig standardNewAction = StandardActions.NEW_ACTION.mkAction(Person.class);
@@ -81,8 +83,11 @@ public class PersonWebUiConfig {
                 .addTopAction(standardExportAction)
                 // row 1
                 .addCrit(Person_).asMulti().autocompleter(Person.class).also()
-                .addCrit(Person_.desc()).asMulti().text().also()
+                .addCrit(Person_.dob()).asRange().date().also()
                 // row 2
+                .addCrit(Person_.name()).asMulti().text().also()
+                .addCrit(Person_.surname()).asMulti().text().also()
+                // row 3
                 .addCrit(Person_.employeeNo()).asMulti().text().also()
                 .addCrit(Person_.title()).asMulti().text()
                 .setLayoutFor(Device.DESKTOP, Optional.empty(), layout)
@@ -92,6 +97,7 @@ public class PersonWebUiConfig {
                     .withSummary("total_count_", "COUNT(SELF)", "Count:The total number of matching Person.")
                     .withAction(standardEditAction).also()
                 .addProp(Person_.desc()).minWidth(200).also()
+                .addProp(Person_.dob()).width(170).also()
                 .addProp(Person_.title()).minWidth(200).also()
                 .addProp(Person_.employeeNo()).minWidth(70).also()
                 .addProp(Person_.phone()).minWidth(70).also()
@@ -103,28 +109,24 @@ public class PersonWebUiConfig {
     }
 
     private EntityMaster<Person> createMaster() {
-        final String layout = cell(
-                cell(cell().repeat(2).layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN))
-               .cell(cell().layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN))
-               .cell(cell().repeat(2).layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN))
-               .cell(cell().repeat(2).layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN))
-               .cell(cell(CELL_LAYOUT).skip().layoutForEach(CELL_LAYOUT).withGapBetweenCells(MARGIN)),
-               PADDING_LAYOUT).toString();
+        final String layout = LayoutComposer.mkGridForMasterFitWidth(5, 2);
 
         final IMaster<Person> masterConfig = new SimpleMasterBuilder<Person>().forEntity(Person.class)
                 // row 1
                 .addProp(Person_.email()).asSinglelineText().also()
                 .addProp(Person_.active()).asCheckbox().also()
                 // row 2
-                .addProp(Person_.desc()).asMultilineText().also()
+                .addProp(Person_.name()).asSinglelineText().also()
+                .addProp(Person_.surname()).asSinglelineText().also()
                 // row 3
-                .addProp(Person_.employeeNo()).asSinglelineText().also()
+                .addProp(Person_.dob()).asDatePicker().also()
                 .addProp(Person_.title()).asSinglelineText().also()
                 // row 4
+                .addProp(Person_.employeeNo()).asSinglelineText().also()
+                .addProp(Person_.user()).asAutocompleter().also()
+                // row 5
                 .addProp(Person_.phone()).asSinglelineText().also()
                 .addProp(Person_.mobile()).asSinglelineText().also()
-                // row 5
-                .addProp(Person_.user()).asAutocompleter().also()
                 .addAction(MasterActions.REFRESH).shortDesc(MASTER_CANCEL_ACTION_SHORT_DESC).longDesc(MASTER_CANCEL_ACTION_LONG_DESC)
                 .addAction(MasterActions.SAVE).shortDesc(MASTER_SAVE_ACTION_SHORT_DESC).longDesc(MASTER_SAVE_ACTION_LONG_DESC)
                 .setActionBarLayoutFor(Device.DESKTOP, Optional.empty(), mkActionLayoutForMaster())
