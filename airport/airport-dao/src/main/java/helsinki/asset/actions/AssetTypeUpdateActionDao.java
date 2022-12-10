@@ -72,6 +72,18 @@ public class AssetTypeUpdateActionDao extends CommonEntityDao<AssetTypeUpdateAct
             }
         }
         
+        int amount = action.getSelectedAssetTypeIds().size();
+        String notification = "";
+        
+        if (amount == 1) {
+            notification = "Updated 1 asset type";
+        }
+        else {
+            notification = "Updated %s asset type".formatted(amount);
+        }
+        
+        action.setPostActionMessage(notification);
+        
         return super.save(action);
     }
     @Override

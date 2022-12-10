@@ -9,6 +9,7 @@ import ua.com.fielden.platform.annotations.metamodel.WithMetaModel;
 import ua.com.fielden.platform.entity.AbstractFunctionalEntityWithCentreContext;
 import ua.com.fielden.platform.entity.NoKey;
 import ua.com.fielden.platform.entity.annotation.KeyType;
+import ua.com.fielden.platform.entity.annotation.MapTo;
 import ua.com.fielden.platform.entity.annotation.Observable;
 import ua.com.fielden.platform.entity.annotation.Required;
 import ua.com.fielden.platform.entity.annotation.Title;
@@ -47,6 +48,20 @@ public class AssetTypeUpdateAction extends AbstractFunctionalEntityWithCentreCon
     @IsProperty(Long.class)
     @Title(value = "Selected Asset Type Ids", desc = "Extended_description")
     private final Set<Long> selectedAssetTypeIds = new LinkedHashSet<Long>();
+    
+    @IsProperty
+    @Title(value = "Message", desc = "A message that is update upon action execution")
+    private String postActionMessage;
+
+    @Observable
+    public AssetTypeUpdateAction setPostActionMessage(final String postActionMessage) {
+        this.postActionMessage = postActionMessage;
+        return this;
+    }
+
+    public String getPostActionMessage() {
+        return postActionMessage;
+    }
 
     @Observable
     public AssetTypeUpdateAction setSelectedAssetTypeIds(final Set<Long> selectedAssetTypeIds) {

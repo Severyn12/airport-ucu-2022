@@ -1,6 +1,7 @@
 package helsinki.webapp.config.asset;
 
 import static java.lang.String.format;
+import static metamodels.MetaModels.AssetTypeUpdateAction_;
 import static metamodels.MetaModels.AssetType_;
 import static helsinki.common.StandardScrollingConfigs.standardStandaloneScrollingConfig;
 
@@ -10,20 +11,24 @@ import com.google.inject.Injector;
 
 import helsinki.asset.AssetClass;
 import helsinki.asset.AssetType;
+import helsinki.asset.actions.AssetTypeUpdateAction;
+import helsinki.asset.actions.producers.AssetTypeUpdateActionProducer;
 import helsinki.common.LayoutComposer;
 import helsinki.common.StandardActions;
-
+import helsinki.common.StandardActionsStyles;
 import ua.com.fielden.platform.web.interfaces.ILayout.Device;
+import ua.com.fielden.platform.web.minijs.JsCode;
 import ua.com.fielden.platform.web.action.CentreConfigurationWebUiConfig.CentreConfigActions;
 import ua.com.fielden.platform.web.centre.api.EntityCentreConfig;
 import ua.com.fielden.platform.web.centre.api.actions.EntityActionConfig;
+import ua.com.fielden.platform.web.centre.api.actions.impl.EntityActionBuilder;
+import ua.com.fielden.platform.web.centre.api.context.impl.EntityCentreContextSelector;
 import ua.com.fielden.platform.web.centre.api.impl.EntityCentreBuilder;
 import ua.com.fielden.platform.web.view.master.api.actions.MasterActions;
 import ua.com.fielden.platform.web.view.master.api.impl.SimpleMasterBuilder;
 import ua.com.fielden.platform.web.view.master.api.IMaster;
 import ua.com.fielden.platform.web.app.config.IWebUiBuilder;
 import helsinki.main.menu.asset.MiAssetType;
-import metamodels.MetaModels;
 import ua.com.fielden.platform.web.centre.EntityCentre;
 import ua.com.fielden.platform.web.view.master.EntityMaster;
 import static ua.com.fielden.platform.web.PrefDim.mkDim;
@@ -49,6 +54,7 @@ public class AssetTypeWebUiConfig {
         builder.register(centre);
         master = createMaster(injector);
         builder.register(master);
+        builder.register(createAssetTypeUpdateActionMaster(injector));
     }
 
     /**
@@ -66,6 +72,17 @@ public class AssetTypeWebUiConfig {
         final EntityActionConfig standardEditAction = StandardActions.EDIT_ACTION.mkAction(AssetType.class);
         final EntityActionConfig standardSortAction = CentreConfigActions.CUSTOMISE_COLUMNS_ACTION.mkAction();
         builder.registerOpenMasterAction(AssetType.class, standardEditAction);
+        
+        final EntityActionConfig assetTypeUpdateAction = EntityActionBuilder.action(AssetTypeUpdateAction.class)
+                .withContext(EntityCentreContextSelector.context().withSelectedEntities().build())
+                .postActionSuccess(() -> new JsCode("""
+                        self.$.egi.clearPageSelection();
+                        self.confirm(functionalEntity.get('postActionMessage'), [{name: 'OK', confirm: 'true', autofocus: 'true'}]);
+                        """))
+                .icon("icons:create")
+                .withStyle(StandardActionsStyles.CUSTOM_ACTION_COLOUR)
+                .longDesc(AssetTypeUpdateAction.ENTITY_DESC)
+                .build();
 
         final EntityCentreConfig<AssetType> ecc = EntityCentreBuilder.centreFor(AssetType.class)
                 .runAutomatically()
@@ -73,7 +90,8 @@ public class AssetTypeWebUiConfig {
                 .addTopAction(standardNewAction).also()
                 .addTopAction(standardDeleteAction).also()
                 .addTopAction(standardSortAction).also()
-                .addTopAction(standardExportAction)
+                .addTopAction(standardExportAction).also()
+                .addTopAction(assetTypeUpdateAction)
                 .addCrit(AssetType_).asMulti().autocompleter(AssetType.class).also()
                 .addCrit(AssetType_.desc()).asMulti().text().also()
                 .addCrit(AssetType_.assetClass()).asMulti().autocompleter(AssetClass.class).also()
@@ -123,4 +141,29 @@ public class AssetTypeWebUiConfig {
 
         return new EntityMaster<>(AssetType.class, masterConfig, injector);
     }
+    
+    
+    /**
+     * Creates entity master for {@link AssetTypeUpdateAction}.
+     *
+     * @param injector
+     * @return created entity master
+     */
+    private EntityMaster<AssetTypeUpdateAction> createAssetTypeUpdateActionMaster(final Injector injector) {
+        final String layout = LayoutComposer.mkGridForMasterFitWidth(1, 1);
+
+        final IMaster<AssetTypeUpdateAction> masterConfig = new SimpleMasterBuilder<AssetTypeUpdateAction>().forEntity(AssetTypeUpdateAction.class)
+                .addProp(AssetTypeUpdateAction_.assetClass()).asAutocompleter().also()
+                .addAction(MasterActions.REFRESH).shortDesc("Cancel").longDesc("Cancel action")
+                .addAction(MasterActions.SAVE)
+                .setActionBarLayoutFor(Device.DESKTOP, Optional.empty(), LayoutComposer.mkActionLayoutForMaster())
+                .setLayoutFor(Device.DESKTOP, Optional.empty(), layout)
+                .setLayoutFor(Device.TABLET, Optional.empty(), layout)
+                .setLayoutFor(Device.MOBILE, Optional.empty(), layout)
+                .withDimensions(mkDim(LayoutComposer.SIMPLE_ONE_COLUMN_MASTER_DIM_WIDTH, 200, Unit.PX))
+                .done();
+
+        return new EntityMaster<>(AssetTypeUpdateAction.class, AssetTypeUpdateActionProducer.class, masterConfig, injector);
+    }
+
 }
