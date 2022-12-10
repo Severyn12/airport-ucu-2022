@@ -5,12 +5,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import helsinki.asset.AssetClass;
+import ua.com.fielden.platform.annotations.metamodel.WithMetaModel;
 import ua.com.fielden.platform.entity.AbstractFunctionalEntityWithCentreContext;
 import ua.com.fielden.platform.entity.NoKey;
 import ua.com.fielden.platform.entity.annotation.KeyType;
 import ua.com.fielden.platform.entity.annotation.Observable;
 import ua.com.fielden.platform.entity.annotation.Required;
 import ua.com.fielden.platform.entity.annotation.Title;
+import ua.com.fielden.platform.error.Result;
 import ua.com.fielden.platform.entity.annotation.KeyTitle;
 import ua.com.fielden.platform.entity.annotation.CompanionObject;
 import ua.com.fielden.platform.entity.annotation.IsProperty;
@@ -26,6 +28,7 @@ import ua.com.fielden.platform.utils.Pair;
 @KeyType(NoKey.class)
 @KeyTitle("Key")
 @CompanionObject(AssetTypeUpdateActionCo.class)
+@WithMetaModel
 public class AssetTypeUpdateAction extends AbstractFunctionalEntityWithCentreContext<NoKey> {
 
     private static final Pair<String, String> entityTitleAndDesc = TitlesDescsGetter.getEntityTitleAndDesc(AssetTypeUpdateAction.class);
@@ -46,7 +49,7 @@ public class AssetTypeUpdateAction extends AbstractFunctionalEntityWithCentreCon
     private final Set<Long> selectedAssetTypeIds = new LinkedHashSet<Long>();
 
     @Observable
-    protected AssetTypeUpdateAction setSelectedAssetTypeIds(final Set<Long> selectedAssetTypeIds) {
+    public AssetTypeUpdateAction setSelectedAssetTypeIds(final Set<Long> selectedAssetTypeIds) {
         this.selectedAssetTypeIds.clear();
         this.selectedAssetTypeIds.addAll(selectedAssetTypeIds);
         return this;
