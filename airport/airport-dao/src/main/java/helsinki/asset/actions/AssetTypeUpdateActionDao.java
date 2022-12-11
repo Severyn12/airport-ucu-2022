@@ -79,7 +79,7 @@ public class AssetTypeUpdateActionDao extends CommonEntityDao<AssetTypeUpdateAct
             notification = "Updated 1 asset type";
         }
         else {
-            notification = "Updated %s asset type".formatted(amount);
+            notification = "Updated %s asset types".formatted(amount);
         }
         
         action.setPostActionMessage(notification);
