@@ -13,6 +13,7 @@ import ua.com.fielden.platform.entity.AbstractEntity;
 import helsinki.asset.AssetType;
 import helsinki.asset.AssetClass;
 import helsinki.asset.actions.AssetTypeUpdateAction;
+import helsinki.asset.Asset;
 
 /**
  * A class to register domain entities.
@@ -30,6 +31,7 @@ public class ApplicationDomain implements IApplicationDomainProvider {
         add(AssetType.class);
         add(AssetClass.class);
         add(AssetTypeUpdateAction.class);
+        add(Asset.class);
     }
 
     private static void add(final Class<? extends AbstractEntity<?>> domainType) {
