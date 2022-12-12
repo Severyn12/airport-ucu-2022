@@ -14,6 +14,7 @@ import static org.apache.logging.log4j.LogManager.getLogger;
 import org.apache.logging.log4j.Logger;
 
 import helsinki.asset.AssetClass;
+import helsinki.asset.AssetType;
 import helsinki.config.ApplicationDomain;
 import helsinki.data.IDomainData;
 import helsinki.utils.PostgresqlDbUtils;
@@ -82,7 +83,12 @@ public class PopulateDb extends DomainDrivenDataPopulation implements IDomainDat
         setupUser(User.system_users.SU, "helsinki");
         setupPerson(User.system_users.SU, "helsinki", "Super", "User");
         
-        save(new_composite(AssetClass.class, "Electrical").setDesc("Electrical equipment"));
+        final AssetClass acElectrical = save(new_composite(AssetClass.class, "Electrical").setDesc("Electrical equipment"));
+        final AssetClass acVehicle = save(new_composite(AssetClass.class, "Vehicles").setDesc("Vehicle-like equipment"));
+        
+        save(new_composite(AssetType.class, "Generators").setAssetClass(acElectrical).setDesc("Electrical generation equipment"));
+        save(new_composite(AssetType.class, "Fire engines").setAssetClass(acVehicle).setDesc("Fire engines equipment"));
+        save(new_composite(AssetType.class, "Hovercraft").setAssetClass(acVehicle).setDesc("Hovercraft equipment"));
 
         LOGGER.info("Completed database creation and population.");
     }

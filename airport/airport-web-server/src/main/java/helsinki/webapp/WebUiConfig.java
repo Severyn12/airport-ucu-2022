@@ -4,10 +4,12 @@ import static ua.com.fielden.platform.reflection.TitlesDescsGetter.getEntityTitl
 
 import org.apache.commons.lang3.StringUtils;
 
+import helsinki.asset.AssetType;
 import helsinki.asset.AssetClass;
 import helsinki.config.Modules;
 import helsinki.config.personnel.PersonWebUiConfig;
 import helsinki.personnel.Person;
+import helsinki.webapp.config.asset.AssetTypeWebUiConfig;
 import helsinki.webapp.config.asset.AssetClassWebUiConfig;
 import ua.com.fielden.platform.basic.config.Workflows;
 import ua.com.fielden.platform.utils.Pair;
@@ -76,6 +78,7 @@ public class WebUiConfig extends AbstractWebUiConfig {
 
         // Users and Personnel Module
         final PersonWebUiConfig personWebUiConfig = PersonWebUiConfig.register(injector(), builder);
+        final AssetTypeWebUiConfig assetTypeWebUiConfig = AssetTypeWebUiConfig.register(injector(), builder);
         final AssetClassWebUiConfig assetClassWebUiConfig = AssetClassWebUiConfig.register(injector(), builder);
         final UserWebUiConfig userWebUiConfig = UserWebUiConfig.register(injector(), builder);
         final UserRoleWebUiConfig userRoleWebUiConfig = UserRoleWebUiConfig.register(injector(), builder);
@@ -101,6 +104,7 @@ public class WebUiConfig extends AbstractWebUiConfig {
             .menu()
                 .addMenuItem(mkMenuItemTitle(Person.class)).description(mkMenuItemDesc(Person.class)).centre(personWebUiConfig.centre).done()
                 .addMenuItem(mkMenuItemTitle(AssetClass.class)).description(mkMenuItemDesc(AssetClass.class)).centre(assetClassWebUiConfig.centre).done()
+                .addMenuItem(mkMenuItemTitle(AssetType.class)).description(mkMenuItemDesc(AssetType.class)).centre(assetTypeWebUiConfig.centre).done()
                 .addMenuItem("System Users").description("Functionality for managing system users, authorisation, etc.")
                     .addMenuItem("Users").description("User centre").centre(userWebUiConfig.centre).done()
                     .addMenuItem("User Roles").description("User roles centre").centre(userRoleWebUiConfig.centre).done()
