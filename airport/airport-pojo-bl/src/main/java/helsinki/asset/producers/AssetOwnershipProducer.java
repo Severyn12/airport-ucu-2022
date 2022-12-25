@@ -1,5 +1,7 @@
 package helsinki.asset.producers;
 
+import static metamodels.MetaModels.AssetOwnership_;
+
 import com.google.inject.Inject;
 
 import helsinki.asset.Asset;
@@ -23,20 +25,20 @@ public class AssetOwnershipProducer extends DefaultEntityProducerWithContext<Ass
     }
 
     @Override
-    protected AssetOwnership provideDefaultValuesForStandardNew(final AssetOwnership entityIn, final EntityNewAction masterEntity) {
-        final AssetOwnership entityOut = super.provideDefaultValuesForStandardNew(entityIn, masterEntity);
+    protected AssetOwnership provideDefaultValuesForStandardNew(final AssetOwnership assetOwnershipIn, final EntityNewAction masterEntity) {
+        final AssetOwnership assetOwnershipOut = super.provideDefaultValuesForStandardNew(assetOwnershipIn, masterEntity);
         // This producer can be invoked from two places:
-        // 1. Standalone centre
+        // 1. Standalone centre -- not in our case, as we do not have a standalone centre for AssetOwnership
         // 2. Centre embedded in Asset Master
         // In the second case we want to default the asset and make it read-only
         if (ofMasterEntity().keyOfMasterEntityInstanceOf(Asset.class)) {
             final Asset shallowAsset = ofMasterEntity().keyOfMasterEntity(Asset.class);
             // shallowAsset has been fetched in OpenAssetMasterActionProducer with key and desc only
-            // It needs to be re-fetched here using a slightly deeper fetch model, as appropriate for CocEntry
-            entityOut.setAsset(refetch(shallowAsset, "asset"));
-            entityOut.getProperty("asset").validationResult().ifFailure(Result::throwRuntime);
-            entityOut.getProperty("asset").setEditable(false);
+            // It needs to be re-fetched here using a slightly deeper fetch model, as appropriate for AssetOwnership
+            assetOwnershipOut.setAsset(refetch(shallowAsset, AssetOwnership_.asset()));
+            assetOwnershipOut.getProperty(AssetOwnership_.asset()).validationResult().ifFailure(Result::throwRuntime);
+            assetOwnershipOut.getProperty(AssetOwnership_.asset()).setEditable(false);
         }
-        return entityOut;
+        return assetOwnershipOut;
     }
 }

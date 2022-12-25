@@ -25,6 +25,7 @@ import helsinki.asset.AssetType;
 import helsinki.asset.master.menu.actions.AssetMaster_OpenAssetFinDet_MenuItem;
 import helsinki.asset.master.menu.actions.AssetMaster_OpenAssetOwnership_MenuItem;
 import helsinki.asset.producers.AssetFinDetProducer;
+import helsinki.asset.producers.AssetOwnershipProducer;
 import helsinki.asset.ui_actions.OpenAssetMasterAction;
 import helsinki.asset.ui_actions.producers.OpenAssetMasterActionProducer;
 import helsinki.asset.master.menu.actions.AssetMaster_OpenMain_MenuItem;
@@ -86,6 +87,8 @@ public class AssetWebUiConfig {
 
         master = createAssetMain();
         builder.register(master);
+        
+        builder.register(createAssetOwnershipMaster(injector));
 
         compoundMaster = CompoundMasterBuilder.<Asset, OpenAssetMasterAction>create(injector, builder)
             .forEntity(OpenAssetMasterAction.class)
@@ -97,7 +100,7 @@ public class AssetWebUiConfig {
                 .withView(master)
             .also()
             .addMenuItem(AssetMaster_OpenAssetFinDet_MenuItem.class)
-                .icon("icons:view-module")
+                .icon("editor:attach-money")
                 .shortDesc(OpenAssetMasterAction.ASSETFINDETS)
                 .longDesc(Asset.ENTITY_TITLE + " " + OpenAssetMasterAction.ASSETFINDETS)
                 .withView(createAssetFinDetMaster())
@@ -159,7 +162,7 @@ public class AssetWebUiConfig {
      * @return
      */
     private EntityMaster<Asset> createAssetMain() {
-        final String layout = LayoutComposer.mkVarGridForMasterFitWidth(2, 1, 1);
+        final String layout = LayoutComposer.mkGridForMasterFitWidth(4, 1);
 
         final IMaster<Asset> masterConfig = new SimpleMasterBuilder<Asset>().forEntity(Asset.class)
                 .addProp(Asset_.number()).asSinglelineText().also()
@@ -201,6 +204,27 @@ public class AssetWebUiConfig {
                 AssetFinDetProducer.class,
                 config,
                 injector);
+    }
+    
+    private EntityMaster<AssetOwnership> createAssetOwnershipMaster(final Injector injector) {
+        final String layout = LayoutComposer.mkGridForMasterFitWidth(5, 1);
+
+        final IMaster<AssetOwnership> masterConfig = new SimpleMasterBuilder<AssetOwnership>().forEntity(AssetOwnership.class)
+                .addProp(AssetOwnership_.asset()).asAutocompleter().also()
+                .addProp(AssetOwnership_.startDate()).asDateTimePicker().also()
+                .addProp(AssetOwnership_.role()).asSinglelineText().also()
+                .addProp(AssetOwnership_.businessUnit()).asSinglelineText().also()
+                .addProp(AssetOwnership_.organisation()).asSinglelineText().also()
+                .addAction(MasterActions.REFRESH).shortDesc("Cancel").longDesc("Cancel action")
+                .addAction(MasterActions.SAVE)
+                .setActionBarLayoutFor(Device.DESKTOP, Optional.empty(), LayoutComposer.mkActionLayoutForMaster())
+                .setLayoutFor(Device.DESKTOP, Optional.empty(), layout)
+                .setLayoutFor(Device.TABLET, Optional.empty(), layout)
+                .setLayoutFor(Device.MOBILE, Optional.empty(), layout)
+                .withDimensions(mkDim(LayoutComposer.SIMPLE_ONE_COLUMN_MASTER_DIM_WIDTH, 480, Unit.PX))
+                .done();
+
+        return new EntityMaster<>(AssetOwnership.class, AssetOwnershipProducer.class, masterConfig, injector);
     }
     
     private EntityCentre<AssetOwnership> createAssetOwnershipCentre() {
