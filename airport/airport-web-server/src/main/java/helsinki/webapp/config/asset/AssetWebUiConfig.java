@@ -205,7 +205,7 @@ public class AssetWebUiConfig {
     
     private EntityCentre<AssetOwnership> createAssetOwnershipCentre() {
         final Class<AssetOwnership> root = AssetOwnership.class;
-        final String layout = LayoutComposer.mkVarGridForCentre(2, 1);
+        final String layout = LayoutComposer.mkGridForCentre (4, 1);
 
         final EntityActionConfig standardEditAction = StandardActions.EDIT_ACTION.mkAction(AssetOwnership.class);
         final EntityActionConfig standardNewAction = StandardActions.NEW_WITH_MASTER_ACTION.mkAction(AssetOwnership.class);
@@ -227,7 +227,7 @@ public class AssetWebUiConfig {
                 .setLayoutFor(Device.TABLET, Optional.empty(), layout)
                 .setLayoutFor(Device.MOBILE, Optional.empty(), layout)
                 .withScrollingConfig(standardEmbeddedScrollingConfig(0))
-                .addProp(AssetOwnership_.startDate()).order(1).desc().width(100)
+                .addProp(AssetOwnership_.startDate()).order(1).desc().width(150)
                     .withSummary("total_count_", "COUNT(SELF)", format("Count:The total number of matching %ss.", AssetOwnership.ENTITY_TITLE)).also()
                 .addProp(AssetOwnership_.role()).minWidth(80).also()
                 .addProp(AssetOwnership_.businessUnit()).minWidth(80).also()
@@ -242,7 +242,7 @@ public class AssetWebUiConfig {
     private static class AssetMaster_AssetOwnershipCentre_QueryEnhancer implements IQueryEnhancer<AssetOwnership> {
         @Override
         public ICompleted<AssetOwnership> enhanceQuery(final IWhere0<AssetOwnership> where, final Optional<CentreContext<AssetOwnership, ?>> context) {
-            return enhanceEmbededCentreQuery(where, createConditionProperty("asset"), context.get().getMasterEntity().getKey());
+            return enhanceEmbededCentreQuery(where, createConditionProperty(AssetOwnership_.asset() ), context.get().getMasterEntity().getKey());
         }
     }
 
