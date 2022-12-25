@@ -89,7 +89,7 @@ public class AssetWebUiConfig {
                 .withView(master)
             .also()
             .addMenuItem(AssetMaster_OpenAssetFinDet_MenuItem.class)
-                .icon("icons:view-module")
+                .icon("editor:attach-money")
                 .shortDesc(OpenAssetMasterAction.ASSETFINDETS)
                 .longDesc(Asset.ENTITY_TITLE + " " + OpenAssetMasterAction.ASSETFINDETS)
                 .withView(createAssetFinDetMaster())
