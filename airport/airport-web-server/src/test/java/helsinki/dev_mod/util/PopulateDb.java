@@ -13,7 +13,10 @@ import org.hibernate.dialect.PostgreSQL82Dialect;
 import static org.apache.logging.log4j.LogManager.getLogger;
 import org.apache.logging.log4j.Logger;
 
+import helsinki.asset.Asset;
 import helsinki.asset.AssetClass;
+import helsinki.asset.AssetCo;
+import helsinki.asset.AssetOwnership;
 import helsinki.asset.AssetType;
 import helsinki.config.ApplicationDomain;
 import helsinki.data.IDomainData;
@@ -85,12 +88,20 @@ public class PopulateDb extends DomainDrivenDataPopulation implements IDomainDat
         
         final AssetClass acElectrical = save(new_composite(AssetClass.class, "Electrical").setDesc("Electrical equipment"));
         final AssetClass acVehicle = save(new_composite(AssetClass.class, "Vehicles").setDesc("Vehicle-like equipment"));
-        
-        save(new_composite(AssetType.class, "Generators").setAssetClass(acElectrical).setDesc("Electrical generation equipment"));
+         
+        final AssetType generators = save(new_composite(AssetType.class, "Generators").setAssetClass(acElectrical).setDesc("Electrical generation equipment."));
         save(new_composite(AssetType.class, "Fire engines").setAssetClass(acVehicle).setDesc("Fire engines equipment"));
         save(new_composite(AssetType.class, "Hovercraft").setAssetClass(acVehicle).setDesc("Hovercraft equipment"));
 
+        final AssetCo coAsset = co(Asset.class);
+        final var generator = save(coAsset.new_().setAssetType(generators).setDesc("Some description"));
+        save(new_composite(AssetOwnership.class, generator, date("2020-10-11 00:00:00")).setRole("Role 1"));
+        save(new_composite(AssetOwnership.class, generator, date("2021-10-11 00:00:00")).setBusinessUnit("Business unit 1"));
+        save(new_composite(AssetOwnership.class, generator, date("2022-10-11 00:00:00")).setBusinessUnit("Business unit 2"));
+
+        
         LOGGER.info("Completed database creation and population.");
+        
     }
 
     @Override

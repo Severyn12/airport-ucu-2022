@@ -2,7 +2,6 @@ package helsinki.security.tokens.compound_master_menu;
 
 import static java.lang.String.format;
 
-import ua.com.fielden.platform.reflection.TitlesDescsGetter;
 import ua.com.fielden.platform.security.tokens.Template;
 import helsinki.asset.master.menu.actions.AssetMaster_OpenAssetFinDet_MenuItem;
 import helsinki.security.tokens.UsersAndPersonnelModuleToken;
