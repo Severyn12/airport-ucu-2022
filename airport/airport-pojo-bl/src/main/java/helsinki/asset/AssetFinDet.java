@@ -2,18 +2,20 @@ package helsinki.asset;
 
 import java.util.Date;
 
+import helsinki.asset.definers.MakeInitCostRequiredDefiner;
 import helsinki.asset.meta.AssetFinDetMetaModel;
-import ua.com.fielden.platform.entity.AbstractEntity;
 import ua.com.fielden.platform.entity.AbstractPersistentEntity;
 import ua.com.fielden.platform.entity.annotation.KeyType;
 import ua.com.fielden.platform.entity.annotation.KeyTitle;
 import ua.com.fielden.platform.entity.annotation.CompanionObject;
 import ua.com.fielden.platform.entity.annotation.Dependent;
+import ua.com.fielden.platform.entity.annotation.EntityTitle;
 import ua.com.fielden.platform.entity.annotation.IsProperty;
 import ua.com.fielden.platform.entity.annotation.MapEntityTo;
 import ua.com.fielden.platform.entity.annotation.MapTo;
 import ua.com.fielden.platform.entity.annotation.Observable;
 import ua.com.fielden.platform.entity.annotation.Title;
+import ua.com.fielden.platform.entity.annotation.mutator.AfterChange;
 import ua.com.fielden.platform.entity.validation.annotation.GeProperty;
 import ua.com.fielden.platform.entity.validation.annotation.LeProperty;
 import ua.com.fielden.platform.reflection.TitlesDescsGetter;
@@ -29,6 +31,7 @@ import ua.com.fielden.platform.utils.Pair;
 @KeyType(Asset.class)
 @KeyTitle("Asset")
 @CompanionObject(AssetFinDetCo.class)
+@EntityTitle(value = "AssetFinDet", desc = "Asset financial details")
 @MapEntityTo
 public class AssetFinDet extends AbstractPersistentEntity<Asset> {
 
@@ -45,20 +48,21 @@ public class AssetFinDet extends AbstractPersistentEntity<Asset> {
     @MapTo
     @Dependent(AssetFinDetMetaModel.disposalDate_)
     @Title(value = "Comission Date", desc = "The date when this asset was comissioned.")
+    @AfterChange(MakeInitCostRequiredDefiner.class)
     private Date comissionDate;
 
     @IsProperty
     @MapTo
     @Dependent(AssetFinDetMetaModel.comissionDate_)
-    @Title(value = "Desposal Date", desc = "The date when this asset was disposed of.")
+    @Title(value = "Desposal Date", desc = "The date when this asset was desposed of.")
     private Date disposalDate;
     
     @Observable
     @Override
-        public AssetFinDet setKey(final Asset key) {
-            super.setKey(key);
-            return this;
-        }
+    public AssetFinDet setKey(final Asset key) {
+        super.setKey(key);
+        return this;
+    } 
  
     @Observable
     @LeProperty(AssetFinDetMetaModel.disposalDate_)
@@ -92,7 +96,4 @@ public class AssetFinDet extends AbstractPersistentEntity<Asset> {
         return initCost;
     }
 
-    
-
-    
 }

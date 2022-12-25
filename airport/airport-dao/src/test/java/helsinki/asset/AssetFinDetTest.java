@@ -1,5 +1,6 @@
 package helsinki.asset;
 
+import static helsinki.asset.AssetFinDetCo.ERR_INITIAL_COST_IS_NOT_SPECIFIED_FOR_COMISSION_DATE;
 import static metamodels.MetaModels.AssetFinDet_;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -13,9 +14,9 @@ import java.util.List;
 import org.junit.Test;
 
 import helsinki.test_config.AbstractDomainTestCase;
-import metamodels.MetaModels;
 import ua.com.fielden.platform.entity.meta.MetaProperty;
 import ua.com.fielden.platform.test.ioc.UniversalConstantsForTesting;
+import ua.com.fielden.platform.types.Money;
 import ua.com.fielden.platform.utils.IUniversalConstants;
 
 
@@ -42,7 +43,6 @@ public class AssetFinDetTest extends AbstractDomainTestCase {
       assertEquals(comissionDate, generatorFinDet.getComissionDate());
       assertEquals(desposalDate, generatorFinDet.getDisposalDate());
 
-      
     }
     
     @Test
@@ -70,33 +70,45 @@ public class AssetFinDetTest extends AbstractDomainTestCase {
         assertEquals(newFutureComissionDate, generatorFinDet.getComissionDate());
         
     }
-        @Test
-        public void desposalDate_cannot_be_before_comissionDate() {
-            final AssetFinDet generatorFinDet = co$(AssetFinDet.class).findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), createNewAssets(1).get(0));
+    @Test
+    public void desposalDate_cannot_be_before_comissionDate() {
+        final AssetFinDet generatorFinDet = co$(AssetFinDet.class).findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), createNewAssets(1).get(0));
             
-            final Date comissionDate = dateTime("2022-12-14 10:00:00").toDate();
-            generatorFinDet.setComissionDate(comissionDate);
-            assertEquals(comissionDate, generatorFinDet.getComissionDate());
+        final Date comissionDate = dateTime("2022-12-14 10:00:00").toDate();
+        generatorFinDet.setComissionDate(comissionDate);
+        assertEquals(comissionDate, generatorFinDet.getComissionDate());
             
-            final Date desposalDate = dateTime("2023-12-14 10:00:00").toDate();
-            generatorFinDet.setDisposalDate(desposalDate);
-            assertEquals(desposalDate, generatorFinDet.getDisposalDate());
+        final Date desposalDate = dateTime("2023-12-14 10:00:00").toDate();
+        generatorFinDet.setDisposalDate(desposalDate);
+        assertEquals(desposalDate, generatorFinDet.getDisposalDate());
+          
+        final MetaProperty<Date> mpDesposalDate = generatorFinDet.getProperty(AssetFinDet_.disposalDate());
+        final Date newFutureDesposalDate = dateTime("2021-12-14 10:00:00").toDate();
+        generatorFinDet.setDisposalDate(newFutureDesposalDate);
             
-            final MetaProperty<Date> mpDesposalDate = generatorFinDet.getProperty(AssetFinDet_.disposalDate());
-            final Date newFutureDesposalDate = dateTime("2021-12-14 10:00:00").toDate();
-            generatorFinDet.setDisposalDate(newFutureDesposalDate);
+        assertFalse(mpDesposalDate.isValid());
+        assertEquals(desposalDate, generatorFinDet.getDisposalDate());
             
-            assertFalse(mpDesposalDate.isValid());
-            assertEquals(desposalDate, generatorFinDet.getDisposalDate());
-            
-            final Date newFutureComissionDate = dateTime("2020-12-14 10:00:00").toDate();
-            generatorFinDet.setComissionDate(newFutureComissionDate);
-            assertTrue(mpDesposalDate.isValid());
-            assertEquals(newFutureDesposalDate, generatorFinDet.getDisposalDate());
+        final Date newFutureComissionDate = dateTime("2020-12-14 10:00:00").toDate();
+        generatorFinDet.setComissionDate(newFutureComissionDate);
+        assertTrue(mpDesposalDate.isValid());
+        assertEquals(newFutureDesposalDate, generatorFinDet.getDisposalDate());          
+  
+    }
+    
+    @Test
+    public void comissionDate_requires_initial_cost() {
+        final AssetFinDet generatorFinDet = co$(AssetFinDet.class).findByKeyAndFetch(AssetFinDetCo.FETCH_PROVIDER.fetchModel(), createNewAssets(1).get(0));
+        final Date comissionDate = dateTime("2022-12-14 10:00:00").toDate();
         
-        
-        
-        
+        generatorFinDet.setComissionDate(comissionDate);
+        generatorFinDet.setInitCost(null);
+
+        assertNotNull(generatorFinDet);
+
+        final MetaProperty<Money> mpInitCost = generatorFinDet.getProperty(AssetFinDet_.initCost());
+        assertFalse(mpInitCost.isValid());
+        assertEquals(ERR_INITIAL_COST_IS_NOT_SPECIFIED_FOR_COMISSION_DATE, mpInitCost.getFirstFailure().getMessage());
     }
     
     @Override
