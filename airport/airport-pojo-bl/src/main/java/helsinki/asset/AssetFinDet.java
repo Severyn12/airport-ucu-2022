@@ -50,7 +50,7 @@ public class AssetFinDet extends AbstractPersistentEntity<Asset> {
     @IsProperty
     @MapTo
     @Dependent(AssetFinDetMetaModel.comissionDate_)
-    @Title(value = "Desposal Date", desc = "The date when this asset was desposed of.")
+    @Title(value = "Desposal Date", desc = "The date when this asset was disposed of.")
     private Date disposalDate;
     
     @Observable
