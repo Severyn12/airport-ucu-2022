@@ -40,7 +40,7 @@ public class AssetDao extends CommonEntityDao<Asset> implements AssetCo {
     
     @Override
         public Asset new_() {
-            return super.new_().setNumber(DEFAULT_ASSET_NO);
+            return super.new_().setNumber(DEFAULT_ASSET_NO).setActive(true);
         }
 
     @Override
@@ -55,22 +55,32 @@ public class AssetDao extends CommonEntityDao<Asset> implements AssetCo {
                 final IKeyNumber coKeyNumber = co(KeyNumber.class);
                 final var nextAssetNo = StringUtils.leftPad(coKeyNumber.nextNumber(ASSET_NO).toString(), ASSET_NO_LENGTH, "0"); 
                 asset.setNumber(nextAssetNo);
-    
             }
+            
+            final var savedAsset = super.save(asset);
+            
+            if (!wasPersisted) {
+                final AssetFinDetCo co$AssetFinDet = co$(AssetFinDet.class);
+                final var assetFinDet = co$AssetFinDet.new_().setKey(savedAsset);
+                co$AssetFinDet.save(assetFinDet);
+            }
+            
+            return savedAsset;
+
         } catch (final Exception ex) {
             if (!wasPersisted) {
                 asset.setNumber(DEFAULT_ASSET_NO);
             }
             throw ex;
-        }
-        
-        return super.save(asset);
+        } 
     }
 
     @Override
     @SessionRequired
     @Authorise(Asset_CanDelete_Token.class)
     public int batchDelete(final Collection<Long> entitiesIds) {
+        final AssetFinDetCo assetFinDetCo = co(AssetFinDet.class);
+        assetFinDetCo.batchDelete(entitiesIds);
         return defaultBatchDelete(entitiesIds);
     }
 
@@ -78,6 +88,8 @@ public class AssetDao extends CommonEntityDao<Asset> implements AssetCo {
     @SessionRequired
     @Authorise(Asset_CanDelete_Token.class)
     public int batchDelete(final List<Asset> entities) {
+        final AssetFinDetCo assetFinDetCo = co(AssetFinDet.class);
+        assetFinDetCo.batchDelete(entities.stream().map(Asset::getId).toList());
         return defaultBatchDelete(entities);
     }
 
