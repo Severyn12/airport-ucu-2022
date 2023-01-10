@@ -2,6 +2,7 @@ package helsinki.asset.ui_actions;
 
 import helsinki.asset.Asset;
 import helsinki.asset.AssetFinDet;
+import helsinki.asset.AssetOwnership;
 import ua.com.fielden.platform.entity.AbstractFunctionalEntityToOpenCompoundMaster;
 import ua.com.fielden.platform.entity.annotation.KeyType;
 import ua.com.fielden.platform.entity.annotation.EntityTitle;
@@ -25,5 +26,7 @@ public class OpenAssetMasterAction extends AbstractFunctionalEntityToOpenCompoun
     public static final String ENTITY_DESC = entityTitleAndDesc.getValue();
 
     public static final String MAIN = "Main";
-    public static final String ASSETFINDETS = AssetFinDet.ENTITY_TITLE + "s"; // Please adjust manually if the plural form is not standard
+    public static final String ASSETFINDETS = AssetFinDet.ENTITY_TITLE + "s";
+    public static final String ASSETOWNERSHIPS = AssetOwnership.ENTITY_TITLE + "s";
+
 }

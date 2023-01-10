@@ -1,11 +1,13 @@
 package helsinki.asset.ui_actions;
 
+import static metamodels.MetaModels.AssetOwnership_;
+
 import com.google.inject.Inject;
 
 import ua.com.fielden.platform.entity.fetch.IFetchProvider;
 import ua.com.fielden.platform.dao.AbstractOpenCompoundMasterDao;
 import ua.com.fielden.platform.dao.IEntityAggregatesOperations;
-import helsinki.asset.AssetFinDet;
+import helsinki.asset.AssetOwnership;
 import ua.com.fielden.platform.entity.query.IFilter;
 import ua.com.fielden.platform.entity.annotation.EntityType;
 
@@ -21,6 +23,7 @@ public class OpenAssetMasterActionDao extends AbstractOpenCompoundMasterDao<Open
     @Inject
     public OpenAssetMasterActionDao(final IFilter filter, final IEntityAggregatesOperations coAggregates) {
         super(filter, coAggregates);
+        this.addViewBinding(OpenAssetMasterAction.ASSETOWNERSHIPS, AssetOwnership.class, AssetOwnership_.asset());
     }
 
     @Override

@@ -15,5 +15,4 @@ public class MakeInitCostRequiredDefiner extends AbstractAfterChangeEventHandler
         mpComissionDate.getEntity().getProperty(AssetFinDet_.initCost()).setRequired(null != value);        
     }
 
-
 }
